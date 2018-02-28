@@ -118,6 +118,42 @@ Make the script executable
 chmod +x init-new-account.sh
 ```
 
+### Set up the Truffle.js file
+```
+vi truffle.js
+```
+
+Paste the development config
+```
+networks: {
+    development: {
+      host: 'localhost',
+      port: 8545,
+      network_id: "100",
+      gas:4712388,   
+    }
+}
+```
+
+### Create truffle compile and migration script
+Run the first command and then copy the code below
+```
+cat > tcm.sh 
+```
+
+```
+#!/bin/bash
+rm -rf build
+truffle compile
+truffle migrate
+```
+
+Make the script executable
+```
+chmod +x tcm.sh
+```
+
+
 ## Running
 
 ### Run new account script and copy address
@@ -132,5 +168,5 @@ Copy Address
 ```
 cd ./data
 ```
-a52e0d0e62d8e8cf449418ef4db5041ca01c80be
+
 Paste address in "alloc"
