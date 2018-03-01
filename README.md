@@ -37,21 +37,21 @@ Contract:
 
     * uint Price: Storage Variable
 
-    * buy(): Function to "buy a virtual good" at the price set in the Storage Variable
-    
+    * buy(): Function to "buy a virtual good" at the price set at the Storage Variable
+
     * setPrice(): Function used by the owner of the Contract to update the Price storage variable
 
-* The buyer will call the buy() to purchase the virtual good at the price specified in the storage * variable.
+1. The buyer will call the buy() to purchase the virtual good at the price specified in the storage variable with a starting price=100.
 
-* The contract owner will call setPrice() and update the price storage variable.
+2. The contract owner will call setPrice() and update the price storage variable to price=150.
 
-* The contract owner will send the transaction with a higher gas fee.
+3. The contract owner will send the transaction with a higher gas fee.
 
-* Contract owners transaction will be mined first, updating the state of the contract
+4. Contract owner's transaction will be mined first, updating the state of the contract
 
-* Buyers transaction gets mined soon after, but now the buy() function will be using the new updated price
+5. Buyers transaction gets mined soon after, but now the buy() function will be using the new updated price=150.
 
-* Buyer sends buy() to buy at 100 but after the transaction is complete, the buyer has bought the "virtual goods" at 150 since the contract owners transaction was mined before the buyer even though the buyer sent the transaction to the mempool/txpool first
+6. Buyer sends buy() to buy at price=100 but after the transaction is complete, the buyer has bought the "virtual goods" at price=150, since the contract owners transaction was mined before the buyer even though the buyer sent the transaction to the mempool/txpool first, thus updating the price storage variable before buyers transaction is complete.
 
 Pre-Solution Contract is:
 ```
