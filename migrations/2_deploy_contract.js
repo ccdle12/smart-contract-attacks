@@ -1,6 +1,8 @@
-var PrevTransactionOrdering = artifacts.require('PrevTransactionOrdering.sol')
+var TransactionOrdering = artifacts.require('TransactionOrdering.sol')
+var SolutionTransactionOrdering = artifacts.require('SolutionTransactionOrdering.sol')
 
 module.exports = function(deployer) {
   // Use deployer to state migration tasks.
-  deployer.deploy(PrevTransactionOrdering);
+  deployer.deploy(TransactionOrdering);
+  deployer.deploy(SolutionTransactionOrdering);
 };
