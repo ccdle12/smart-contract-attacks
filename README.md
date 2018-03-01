@@ -4,12 +4,6 @@ Creating Contracts and Testing possible Attacks
 
 ## Prerequisites
 
-Install Geth via instructions on website
-
-```
-https://www.ethereum.org/cli
-```
-
 Install Truffle via npm
 
 ```
@@ -27,7 +21,7 @@ This is due to the current difficulty of simulating race conditions in certain t
 Transaction Ordering Attacks is a race condition attack. Two transactions will be sent to the mempool/tx-pool, the order in which they are sent is irrelevant according to the gas sent to incentivize miners to mine their transactions first.
 
 ### Scenario:
-Two Participants:
+Participants:
 
     * Buyer 
 
