@@ -35,7 +35,6 @@ Contract:
 
     * setPrice(): Function used by the owner of the Contract to update the Price storage variable
 
-    ```
     pragma solidity ^0.4.18;
 
     contract PrevTransactionOrdering {
@@ -66,7 +65,6 @@ Contract:
             PriceChange(owner, price);
         }
     }
-    ```
 
 1. The buyer will call the buy() to purchase the virtual good at the price specified in the storage variable with a starting price=100.
 
