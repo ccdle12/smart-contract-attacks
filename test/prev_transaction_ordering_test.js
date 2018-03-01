@@ -1,4 +1,4 @@
-const PrevTransactionOrdering = artifacts.require('PrevTransactionOrdering.sol')
+const TransactionOrdering = artifacts.require('TransactionOrdering.sol')
 
 const BigNumber = web3.BigNumber;
 
@@ -7,7 +7,7 @@ const should = require('chai')
   .use(require('chai-bignumber')(BigNumber))
   .should();
 
-contract('PrevTransactionOrdering', function(accounts) {
+contract('TransactionOrdering', function(accounts) {
   
   const ERROR_MSG = 'VM Exception while processing transaction: revert';
   const deploying_account = accounts[0];
@@ -17,23 +17,23 @@ contract('PrevTransactionOrdering', function(accounts) {
   const account4 = accounts[4];
 
   beforeEach(async () => {
-    this.PrevTransactionOrdering = await PrevTransactionOrdering.new({from: deploying_account});
+    this.TransactionOrdering = await TransactionOrdering.new({from: deploying_account});
   });
 
   it("should exist", async() =>  {
-    await this.PrevTransactionOrdering.should.exist
+    await this.TransactionOrdering.should.exist
   });
 
   it("should buy returns price", async() => {
-    var price = await this.PrevTransactionOrdering.buy.call({from: account1});
+    var price = await this.TransactionOrdering.buy.call({from: account1});
     console.log("Account 1: " + account1)
     console.log(price)
     price.toNumber().should.equal(100)
   });
 
   it("should update price", async() => {
-    await this.PrevTransactionOrdering.setPrice(120, {from: deploying_account});
-    var price = await this.PrevTransactionOrdering.buy.call({from: account1, gas:200000});
+    await this.TransactionOrdering.setPrice(120, {from: deploying_account});
+    var price = await this.TransactionOrdering.buy.call({from: account1, gas:200000});
     console.log("Deploying Account: " + deploying_account)
     console.log(price)
 
@@ -41,7 +41,7 @@ contract('PrevTransactionOrdering', function(accounts) {
   });
 
   it("should should fail since only owner can set price", async() => {
-    await this.PrevTransactionOrdering.setPrice(120, {from: account1}).should.be.rejectedWith(ERROR_MSG);
+    await this.TransactionOrdering.setPrice(120, {from: account1}).should.be.rejectedWith(ERROR_MSG);
   });
 
   function requestAsync(url) {
@@ -55,8 +55,8 @@ contract('PrevTransactionOrdering', function(accounts) {
 
   it("should should return the price as 150 since owner has used more gas to cause race conditions", async() => {
 
-    var price = await this.PrevTransactionOrdering.buy.call({from: account1, gas:200000});
-    await this.PrevTransactionOrdering.setPrice(150, {from: deploying_account, gas:1000000});
+    var price = await this.TransactionOrdering.buy.call({from: account1, gas:200000});
+    await this.TransactionOrdering.setPrice(150, {from: deploying_account, gas:1000000});
 
     console.log(price.toNumber())
   })

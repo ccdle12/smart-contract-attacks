@@ -21,6 +21,13 @@ This is due to the current difficulty of simulating race conditions in certain t
 A Transaction Ordering Attack is a race condition attack. Two transactions will be sent to the mempool/tx-pool, the order in which they are sent is irrelevant. The gas sent with the transaction is vital in this scenario as it incentivizes miners to mine their transactions first.
 
 ### Scenario:
+Contract is deployed at: 0xfd3673a4fd729ee501cbacd4aac97741e287d318
+
+Pre-Solution Contract is:
+```
+TransactionOrdering.sol
+```
+
 Participants:
 
     * Buyer 
@@ -37,7 +44,7 @@ Contract:
     - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
     pragma solidity ^0.4.18;
 
-    contract PrevTransactionOrdering {
+    contract TransactionOrdering {
         uint256 price;
         address owner;
         
@@ -49,7 +56,7 @@ Contract:
             _;
         }
 
-        function PrevTransactionOrdering() {
+        function TransactionOrdering() {
             // constructor
             owner = msg.sender;
             price = 100;
@@ -78,9 +85,5 @@ Contract:
 
 6. Buyer sends buy() to buy at price=100 but after the transaction is complete, the buyer has bought the "virtual goods" at price=150, since the contract owners transaction was mined before the buyer even though the buyer sent the transaction to the mempool/txpool first, thus updating the price storage variable before buyers transaction is complete.
 
-Pre-Solution Contract is:
-```
-PrevTransactionOrdering.sol
-```
 
 

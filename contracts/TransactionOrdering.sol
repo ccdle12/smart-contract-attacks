@@ -1,6 +1,6 @@
 pragma solidity ^0.4.18;
 
-contract PrevTransactionOrdering {
+contract TransactionOrdering {
   uint256 price;
   address owner;
   
@@ -12,7 +12,7 @@ contract PrevTransactionOrdering {
     _;
   }
 
-  function PrevTransactionOrdering() {
+  function TransactionOrdering() {
     // constructor
     owner = msg.sender;
     price = 100;
