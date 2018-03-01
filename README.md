@@ -41,7 +41,7 @@ Contract:
 
 3. The contract owner will send the transaction with a higher gas fee.
 
-4. Contract owner's transaction will be mined first, updating the state of the contract
+4. Contract owner's transaction will be mined first, updating the state of the contract due to the higher gas fee.
 
 5. Buyers transaction gets mined soon after, but now the buy() function will be using the new updated price=150.
 
