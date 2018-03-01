@@ -29,12 +29,12 @@ Participants:
 
 Contract:
 
-    * uint Price: Storage Variable
+    * uint256 price: Storage Variable
 
     * buy(): Function to "buy a virtual good" at the price set at the Storage Variable
 
     * setPrice(): Function used by the owner of the Contract to update the Price storage variable
-
+    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
     pragma solidity ^0.4.18;
 
     contract PrevTransactionOrdering {
