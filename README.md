@@ -140,7 +140,7 @@ contract SolutionTransactionOrdering {
 }
 ```
 
-1. Buy know has to send a txCounter uint value, this will be linked to the current price.
+1. Buyer now has to send a txCounter uint value, this will be linked to the current price.
 
 2. If the txCounter doesn't match the one in the contract, then transaction is reverted.
 
