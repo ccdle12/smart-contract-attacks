@@ -12,6 +12,13 @@ contract SolutionTransactionOrdering {
     require(msg.sender == owner);
     _;
   }
+  function getPrice() constant returns (uint256) {
+    return price;
+  }
+
+  function getTxCounter() constant returns (uint256) {
+    return txCounter;
+  }
 
   function SolutionTransactionOrdering() {
     // constructor

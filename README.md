@@ -20,7 +20,7 @@ This is due to the current difficulty of simulating race conditions in certain t
 
 A Transaction Ordering Attack is a race condition attack. Two transactions will be sent to the mempool/tx-pool, the order in which they are sent is irrelevant. The gas sent with the transaction is vital in this scenario as it incentivizes miners to mine their transactions first.
 
-### Scenario:
+### Scenario - Pre Solution:
 Contract is deployed at: 0xfd3673a4fd729ee501cbacd4aac97741e287d318
 
 Pre-Solution Contract is:
@@ -86,4 +86,64 @@ Contract:
 6. Buyer sends buy() to buy at price=100 but after the transaction is complete, the buyer has bought the "virtual goods" at price=150, since the contract owners transaction was mined before the buyer even though the buyer sent the transaction to the mempool/txpool first, thus updating the price storage variable before buyers transaction is complete.
 
 
+### Scenario - Solution:
 
+Contract is deployed at: 0x1abfe2f12447e877cb1bfe91a4e7eed0251b4d56
+
+Solution Contract is:
+```
+SolutionTransactionOrdering.sol
+```
+
+Contract: 
+```
+pragma solidity ^0.4.18;
+
+contract SolutionTransactionOrdering {
+  uint256 price;
+  uint256 txCounter;
+  address owner;
+  
+  event Purchase(address _buyer, uint256 _price);
+  event PriceChange(address _owner, uint256 _price);
+  
+  modifier ownerOnly() {
+    require(msg.sender == owner);
+    _;
+  }
+  function getPrice() constant returns (uint256) {
+    return price;
+  }
+
+  function getTxCounter() constant returns (uint256) {
+    return txCounter;
+  }
+
+  function SolutionTransactionOrdering() {
+    // constructor
+    owner = msg.sender;
+    price = 100;
+    txCounter = 0;
+  }
+
+  function buy(uint256 _txCounter) returns (uint256) {
+    require(_txCounter == txCounter);
+    Purchase(msg.sender, price);
+    return price;
+  }
+
+  function setPrice(uint256 _price) ownerOnly() {
+    price = _price;
+    txCounter += 1;
+    PriceChange(owner, price);
+  }
+}
+```
+
+1. Buy know has to send a txCounter uint value, this will be linked to the current price.
+
+2. If the txCounter doesn't match the one in the contract, then transaction is reverted.
+
+3. When contract owner updates the price, txCounter is incremented.
+
+4. Now if contract owner beats buyer in transaction ordering, the buyers transaction will be reverted since txCounter does not match thus signifying price has changed.
