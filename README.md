@@ -28,12 +28,17 @@ Transaction Ordering Attacks is a race condition attack. Two transactions will b
 
 ### Scenario:
 Two Participants:
+
     * Buyer 
+
     * Owner of Contract
 
 Contract:
+
     * uint Price: Storage Variable
+
     * buy(): Function to "buy a virtual good" at the price set in the Storage Variable
+    
     * setPrice(): Function used by the owner of the Contract to update the Price storage variable
 
 * The buyer will call the buy() to purchase the virtual good at the price specified in the storage * variable.
