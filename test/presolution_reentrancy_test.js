@@ -9,7 +9,7 @@ const should = require('chai')
   .should();
 
 
-contract('Reentrancy', function(accounts) {
+contract('PreSolution Reentrancy', function(accounts) {
   const ERROR_MSG = 'VM Exception while processing transaction: revert'
   const deploying_account = accounts[0]
   const account1 = accounts[1]
@@ -31,7 +31,7 @@ contract('Reentrancy', function(accounts) {
   });
 
   it("should deposit 90 Ether into the contract", async() =>  {
-    await this.Victim.deposit({from: account1, value: web3.toWei(90, 'ether')})
+    await this.Victim.deposit({from: account2, value: web3.toWei(90, 'ether')})
 
     var balance = await web3.eth.getBalance(this.Victim.address)
     var expected = web3.toWei(90)
@@ -39,8 +39,8 @@ contract('Reentrancy', function(accounts) {
     balance.toNumber().toString().should.equal(expected)
   });
 
-  it("should show account1 balance as 9", async() =>  {
-    var balance = await getBalance(account1)
+  it("should show account2 balance as 9", async() =>  {
+    var balance = await getBalance(account2)
     var balance = balance.c[0]
 
     var expected = 100000
@@ -58,7 +58,7 @@ contract('Reentrancy', function(accounts) {
 
   it("should attack victim and have a balance of 50 ether", async() =>  {
 
-    await this.Attacker.collect({from: account1, value: web3.toWei(1, "ether")})
+    await this.Attacker.collect({from: account2, value: web3.toWei(1, "ether")})
 
     var balance = await getBalanceInEth(this.Attacker.address)
 
@@ -72,12 +72,12 @@ contract('Reentrancy', function(accounts) {
 
   it("should kill attacking contract and siphone all the funds to account1", async() =>  {
 
-    var beforeKill = await getBalance(account1).toNumber()
+    var beforeKill = await getBalance(account2).toNumber()
     console.log("Account1 Balance before kill contract: " + beforeKill)
 
-    await this.Attacker.kill({from: account1})
+    await this.Attacker.kill({from: account2})
 
-    var afterKill = await getBalance(account1).toNumber()
+    var afterKill = await getBalance(account2).toNumber()
     console.log("Account1 Balance after kill contract: " + afterKill)
 
     afterKill.should.be.above(beforeKill)

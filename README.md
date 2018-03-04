@@ -161,6 +161,12 @@ Attacker.sol
 Victim.sol
 ```
 
+Tests are located at: 
+
+```
+./test/presolution_reentrancy_test.js
+```
+
 Participants:
 
     * Malicious User
@@ -282,4 +288,28 @@ contract Attacker {
 6. When 1 ether is received at the Attacking Contract via the fallback function, victim.withdraw() is called again 50 times
 
 7. The Victim Contract will continue sending Ether to the Attacking contract until count has reached 50
+
+
+### Scenario - Solution:
+
+re-Solution Contract is:
+```
+SolutionAttacker.sol
+
+SolutionVictim.sol
+```
+
+Tests are located at: 
+
+```
+./test/solution_reentrancy_test.js
+```
+
+Participants:
+
+    * Malicious User
+
+    * Attacking Contract
+
+    * Victim Contract
 
