@@ -292,7 +292,7 @@ contract Attacker {
 
 ### Scenario - Solution:
 
-re-Solution Contract is:
+Solution Contract is:
 ```
 SolutionAttacker.sol
 
