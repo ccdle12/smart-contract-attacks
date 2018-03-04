@@ -313,3 +313,71 @@ Participants:
 
     * Victim Contract
 
+Contract:
+
+Solution Victim:
+
+  * Solution Victim now has 3 different methods to protect against reentrancy attacks:
+
+  * noReentrancy Modifier
+
+  * Using msg.sender.send instead of msg.sender.call.value to send amount to sender
+
+  * Updating the state of the senders balance BEFORE sending the Ether to the sender
+
+```
+pragma solidity ^0.4.18;
+
+contract SolutionVictim {
+  
+  mapping(address => uint) public balances;
+
+  mapping(address => bool) public lockedState;
+
+  modifier noReentrancy(address _sender) {
+    require(!lockedState[_sender]);
+    lockedState[_sender] = true;
+    _;
+    lockedState[_sender] = false;
+  }
+
+  event WithdrawEvent(address _sender, uint amount);
+
+  function SolutionVictim() {
+  }
+
+  function deposit() payable {
+    balances[msg.sender] = msg.value;
+  }
+
+  function getBalance() constant returns (uint) {
+    return balances[msg.sender];
+  }
+
+  function() payable {
+    balances[msg.sender] = msg.value;
+  }
+
+  function withdraw() noReentrancy(msg.sender) {
+    WithdrawEvent(msg.sender, balances[msg.sender]);
+
+    require(balances[msg.sender] > 0);
+    uint valueOfBalance = balances[msg.sender];
+
+    balances[msg.sender] = 0;
+
+    if (!msg.sender.send(valueOfBalance)) {
+      revert();
+    } 
+  }
+}
+```
+
+1. Modifier noReentrancy will "lock" the withdraw function while it is being called, if an attack tries to recall withdraw() using a recursive attack, the call is reverted.
+
+2. Replaced msg.sender.call with msg.sender.send(), send() will make a transaction with a gas stipened of only 2300. The receiver's (attacker) fallback function will not be able to update storage variables or call any other functions with the receiving gas amount, the level of gas will only allow a logging event.
+
+* msg.sender.call() can send as much gas as it likes, this has inherent security risks as it allows a malicious contract to use a reentrancy attack.
+
+3. Very important method for protecting against Reentrancy, sets the storage mapping of the users balance to 0 BEFORE sending any Ether. If the attacker does manage to recurisvely call the withdraw function, the mapping will already be set to 0 and will not be able to transfer any Ether to the attacker.
+

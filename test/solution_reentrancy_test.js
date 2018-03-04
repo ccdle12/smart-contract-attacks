@@ -40,56 +40,60 @@ contract('Solution Reentrancy', function(accounts) {
   });
 
   it("should show account1 balance as 9", async() =>  {
-    var balance = await getBalance(account1)
-    var balance = balance.c[0]
-
-    var expected = 100000
+    var balance = await getBalanceInEth(account1)
+    var expected = 10
 
     balance.should.not.be.above(expected)
   });
 
   it("SolutionAttacker address should have a balance of 0", async() =>  {
-    var attackerBalance = await getBalance(this.SolutionAttacker.address)
-    
-    var balance = attackerBalance.c[0]
-
-    balance.should.equal(0)
+    var attackerBalance = await getBalanceInEth(this.SolutionAttacker.address)
+  
+    attackerBalance.should.equal(0)
   });
 
-  it("should attack SolutionVictim and have a balance of 50 ether", async() =>  {
-
-    await this.SolutionAttacker.collect({from: account1, value: web3.toWei(1, "ether")})
-
-    var balance = await getBalanceInEth(this.SolutionAttacker.address)
-
-    console.log("SolutionVictim Balance after attack: " + await getBalance(this.SolutionVictim.address))
-    console.log("Balance after attack: " + balance)
-   
-    var expected = 50
-
-    balance.should.be.equal(expected)
+  it("should attack SolutionVictim and fail, since we cannot recurisvely call withdraw", async() =>  {
+    await this.SolutionAttacker.collect({from: account1, value: web3.toWei(1, "ether")}).should.be.rejectedWith(ERROR_MSG)
   });
 
-  it("should kill attacking contract and siphone all the funds to account1", async() =>  {
+  it("should allow a honest user to deposit 1 ether", async() =>  {
+    var prevBalance = getBalanceInEth(account4)
 
-    var beforeKill = await getBalance(account1).toNumber()
-    console.log("Account1 Balance before kill contract: " + beforeKill)
+    await web3.eth.sendTransaction({from: account4, to: this.SolutionVictim.address, value: web3.toWei(1, "ether")})
 
-    await this.SolutionAttacker.kill({from: account1})
+    var balance = getBalanceInEth(account4)
 
-    var afterKill = await getBalance(account1).toNumber()
-    console.log("Account1 Balance after kill contract: " + afterKill)
-
-    afterKill.should.be.above(beforeKill)
+    balance.should.not.be.above(prevBalance - 1)
   });
 
-  it("should show SolutionAttacker contract drained of funds", async() =>  {
+  it("should allow a honest user to withdraw 1 ether", async() =>  {
+    var prevBalance = getBalanceInEth(account4)
 
-    var attackerBalance = await getBalance(this.SolutionAttacker.address).toNumber()
-    var expected = 0
+    await this.SolutionVictim.withdraw({from: account4})
 
-    attackerBalance.should.equal(expected)
+    var balance = getBalanceInEth(account4)
+
+    balance.should.be.above(prevBalance)
   });
 
+  it("should show honest user balance in contract as 0", async() =>  {
+    var balance = await this.SolutionVictim.getBalance({from: account4})  
+    balance = balance.c[0]
+
+    balance.should.be.equal(0)
+  });
+
+  it("should throw error as user cannot withdraw anymore", async() =>  {
+    var balance = await this.SolutionVictim.withdraw({from: account4}).should.be.rejectedWith(ERROR_MSG)
+  });
+
+  it("should show honest user can deposit and not be locked out", async() =>  {
+    await web3.eth.sendTransaction({from: account4, to: this.SolutionVictim.address, value: web3.toWei(1, "ether")})
+
+    var balance = await this.SolutionVictim.getBalance({from: account4})  
+    balance = web3.fromWei(balance.toNumber())
+
+    balance.should.be.equal('1')
+  });
 
 });
