@@ -386,7 +386,7 @@ contract SolutionVictim {
 A way to prevent front running attacks, reorg attacks on the blockchain and submit information to a Smart Contract without revealing a key component (secret) and revealing it safely at a later point in time to claim a reward.
 
 ### Scenario 
-The contract below will simulate a POW system, where users will submit a proof of work in the form of a `uint8 nonce`, the users will want this submission to encrypted.
+The contract below will simulate a POW system, where users will submit a proof of work in the form of a `uint8 nonce`, the users will want this submission to be encrypted.
 
 * Why?
 
