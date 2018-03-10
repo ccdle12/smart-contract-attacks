@@ -381,3 +381,104 @@ contract SolutionVictim {
 
 3. Very important method for protecting against Reentrancy, sets the storage mapping of the users balance to 0 BEFORE sending any Ether. If the attacker does manage to recurisvely call the withdraw function, the mapping will already be set to 0 and will not be able to transfer any Ether to the attacker.
 
+
+## Blind Commitments
+A way to prevent front running attacks, reorg attacks on the blockchain and submit information to a Smart Contract without revealing a key component (secret) and revealing it safely at a later point in time to claim a reward.
+
+### Scenario 
+The contract below will simulate a POW system, where users will submit a proof of work in the form of a `uint8 nonce`, the users will want this submission to encrypted.
+
+* Why?
+
+* A malicious user, owner of the contract or a miner can front run the tx, by viewing the nonce that was submitted to the blockchain, they can create a tx that will be submitted before the honest users tx.
+
+* A malicious miner can attempt a reorg attack, the miner will mine another block at the same height, submitting the same tx and nonce from another address. Now the longest chain will be considered the valid transaction and the miner can begin working on submitting blocks to their chain.
+
+Contract:
+
+```
+pragma solidity ^0.4.4;
+
+contract BlindCommitments {
+
+  //Storage Variables
+  bytes8 public difficultyTarget;
+  uint256 public reward;
+  address public owner;
+  mapping (bytes8 => uint) commits;
+  uint blockWait = 4;
+
+  // constructor
+  function BlindCommitments(uint256 initialReward, bytes8 difficulty) public {
+    owner = msg.sender;
+    reward = initialReward;
+    difficultyTarget = difficulty;
+  }
+
+  // change difficulty
+  function setDiff(bytes8 difficulty) external {
+    require(owner == msg.sender);
+    difficultyTarget = difficulty;
+  }
+
+  // mine for valid nonce
+  function mine(uint8 nonce) external view returns (bytes8) {
+    // hash nonce
+    bytes8 res = bytes8(keccak256(bytes8(nonce)));
+
+    // difficulty target check
+    require(res >= difficultyTarget);
+
+    // returns the blind commitment
+    bytes8 c = bytes8(keccak256(bytes8(nonce) ^ bytes8(msg.sender)));
+    
+    return c;
+  }
+
+  //submit blind commitment
+  function blindCommitment(bytes8 _c) external {
+    commits[_c] = block.number;
+  }
+
+  // claim reward after X blocks
+  function claimReward(uint8 nonce) public {
+    // nonce must be valid for difficulty target
+    bytes8 res = bytes8(keccak256(bytes8(nonce)));
+    require(res >= difficultyTarget);
+
+    // the nonce must have been sent blockWait blocks ago
+    bytes8 c = bytes8(keccak256(bytes8(nonce) ^ bytes8(msg.sender)));
+    require(commits[c] > 0 && (commits[c] + blockWait) < block.number);
+
+    //transfer funds
+    msg.sender.transfer(this.balance);
+  }
+
+  //
+  function skipBlock() external returns (uint) {
+     
+  }
+}
+```
+
+1. Contract is deployed with a difficulty target
+
+2. Competing users will continously call `mine()` and submit their guess of the nonce
+
+3. The user will know if their nonce is within the difficulty target because they will be returned an 8 bytes hash
+
+4. The 8 bytes hash is keccak256() hash (which is sha3?) concatenated with the msg.sender address: This is the BLIND COMMITMENT
+
+5. In this scenario, the winning user will call blindCommitment(bytes8 winningHash) and will be mapped in the contract to the blockNumber
+
+6. The hash is important since:
+
+  * Attackers cannot decipyher the nonce or the sending address
+
+  * Attackers would need both pieces of information (nonce + senders address)
+
+  * Even with both pieces of information, attacker would have to know senders private key and send the transaction from the winning users address
+
+7. The user can claim the reward safely by revealing the secret when calling `claimReward(uint8 nonce)`
+
+8. The user can only claim the reward after blocks, to defend against reorg attacksgit 
