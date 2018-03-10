@@ -55,6 +55,7 @@ contract BlindCommitments {
     msg.sender.transfer(this.balance);
   }
 
+  //
   function skipBlock() external returns (uint) {
      
   }

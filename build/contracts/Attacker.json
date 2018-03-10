@@ -112,7 +112,7 @@
       },
       {
         "attributes": {
-          "SourceUnit": 622,
+          "SourceUnit": 800,
           "absolutePath": "/Users/christophercoverdale/Desktop/Projects/solidity/contract-attacks/contracts/Victim.sol",
           "file": "./Victim.sol",
           "scope": 77,
@@ -159,7 +159,7 @@
                 "attributes": {
                   "contractScope": null,
                   "name": "Victim",
-                  "referencedDeclaration": 621,
+                  "referencedDeclaration": 799,
                   "type": "contract Victim"
                 },
                 "id": 3,
@@ -384,7 +384,7 @@
                                   "overloadedDeclarations": [
                                     null
                                   ],
-                                  "referencedDeclaration": 621,
+                                  "referencedDeclaration": 799,
                                   "type": "type(contract Victim)",
                                   "value": "Victim"
                                 },
@@ -533,7 +533,7 @@
                                       "isPure": false,
                                       "lValueRequested": false,
                                       "member_name": "deposit",
-                                      "referencedDeclaration": 552,
+                                      "referencedDeclaration": 730,
                                       "type": "function () payable external"
                                     },
                                     "children": [
@@ -579,7 +579,7 @@
                                       "overloadedDeclarations": [
                                         null
                                       ],
-                                      "referencedDeclaration": 633,
+                                      "referencedDeclaration": 811,
                                       "type": "msg",
                                       "value": "msg"
                                     },
@@ -637,7 +637,7 @@
                               "isPure": false,
                               "lValueRequested": false,
                               "member_name": "withdraw",
-                              "referencedDeclaration": 620,
+                              "referencedDeclaration": 798,
                               "type": "function () external"
                             },
                             "children": [
@@ -748,7 +748,7 @@
                               "overloadedDeclarations": [
                                 null
                               ],
-                              "referencedDeclaration": 639,
+                              "referencedDeclaration": 817,
                               "type": "function (address)",
                               "value": "selfdestruct"
                             },
@@ -774,7 +774,7 @@
                                   "overloadedDeclarations": [
                                     null
                                   ],
-                                  "referencedDeclaration": 633,
+                                  "referencedDeclaration": 811,
                                   "type": "msg",
                                   "value": "msg"
                                 },
@@ -919,7 +919,7 @@
                                   "overloadedDeclarations": [
                                     null
                                   ],
-                                  "referencedDeclaration": 646,
+                                  "referencedDeclaration": 824,
                                   "type": "contract Attacker",
                                   "value": "this"
                                 },
@@ -1068,7 +1068,7 @@
                                       "isPure": false,
                                       "lValueRequested": false,
                                       "member_name": "withdraw",
-                                      "referencedDeclaration": 620,
+                                      "referencedDeclaration": 798,
                                       "type": "function () external"
                                     },
                                     "children": [
@@ -1136,17 +1136,12 @@
     "version": "0.4.18+commit.9cf6e910.Emscripten.clang"
   },
   "networks": {
-    "4447": {
+    "1520682743742": {
       "events": {},
       "links": {},
-      "address": "0x219ebb52f4e92c4fa554e80316b95d4adefb3ed6"
-    },
-    "1520180392210": {
-      "events": {},
-      "links": {},
-      "address": "0x866216ff2fbb7321bcff1a37d54b1d7510e0db87"
+      "address": "0xc3c01c1aa674c4d3b4c7cf20365897380a3d220b"
     }
   },
   "schemaVersion": "1.0.1",
-  "updatedAt": "2018-03-10T11:33:20.534Z"
+  "updatedAt": "2018-03-10T11:52:39.538Z"
 }
