@@ -292,7 +292,7 @@ contract Attacker {
 
 ### Scenario - Solution:
 
-re-Solution Contract is:
+Solution Contract is:
 ```
 SolutionAttacker.sol
 
@@ -373,9 +373,9 @@ contract SolutionVictim {
 }
 ```
 
-1. Modifier noReentrancy will "lock" the withdraw function while it is being called, if an attack tries to recall withdraw() using a recursive attack, the call is reverted.
+1. Modifier _noReentrancy_ will "lock" the withdraw function while it is being called, if an attacker tries to recall withdraw() using a recursive attack, the call is reverted.
 
-2. Replaced msg.sender.call with msg.sender.send(), send() will make a transaction with a gas stipened of only 2300. The receiver's (attacker) fallback function will not be able to update storage variables or call any other functions with the receiving gas amount, the level of gas will only allow a logging event.
+2. Replaced _msg.sender.call_ with _msg.sender.send()_, send() will make a transaction with a gas stipened of only 2300. The receiver's (attacker) fallback function will not be able to update storage variables or call any other functions with the receiving gas amount, the level of gas will only allow a logging event.
 
 * msg.sender.call() can send as much gas as it likes, this has inherent security risks as it allows a malicious contract to use a reentrancy attack.
 
